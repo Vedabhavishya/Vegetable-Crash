@@ -8,7 +8,7 @@ let timerInterval;
 let timer = 60; // 1 minute in seconds
 
 // Vegetable images
-const vegetables = ["🥕", "🍅", "🥦", "🌽", "🍆"];
+const vegetables = ["🍎", "🧅", "🍈", "🍐", "🍅", "🥦", "🌽", "🍆", "🍋", "🍉", "🍓", "🫐", "🍊", "🍑", "🥥", "🍏"];
 
 function createVegetable() {
   if (lives <= 0) return; // Stop creating vegetables if the game is over
