@@ -10,12 +10,8 @@ let timer = 60; // 1 minute in seconds
 // Vegetable images
 const vegetables = ["🍎", "🧅", "🍈", "🍐", "🍅", "🥦", "🌽", "🍆", "🍋", "🍉", "🍓", "🫐", "🍊", "🍑", "🥥", "🍏"];
 
-let isScratching = false;
-let lastMouseX = 0;
-let lastMouseY = 0;
-
 function createVegetable() {
-  if (lives <= 0) return;
+  if (lives <= 0) return; // Stop creating vegetables if the game is over
 
   const vegetable = document.createElement("div");
   vegetable.classList.add("vegetable");
@@ -27,61 +23,50 @@ function createVegetable() {
 
   canvas.appendChild(vegetable);
 
+  // Animate falling
   let speed = Math.random() * 1 + 0.5; // Random speed
-
   function fall() {
     let top = parseFloat(vegetable.style.top);
-
     if (top > window.innerHeight) {
-      // Vegetable falls off the screen; simply remove it
-      vegetable.remove();
+      if (!vegetable.classList.contains("clicked") && lives > 0) {
+        // Only deduct life if the game is not over
+        lives -= 1;
+        updateScoreBoard();
+        if (lives <= 0) {
+          checkGameOver();
+        }
+      }
+      vegetable.remove(); // Remove vegetable after it falls out
     } else if (vegetable.parentElement) {
       vegetable.style.top = top + speed + "px";
       requestAnimationFrame(fall);
     }
   }
   fall();
+
+  // Add click event
+  vegetable.addEventListener("click", (event) => {
+    event.stopPropagation(); // Prevent canvas click event from triggering
+    if (!vegetable.classList.contains("clicked")) {
+      vegetable.classList.add("clicked");
+      score += 10; // Add points for clicking
+      vegetable.style.animation = "bounce 0.3s"; // Add bounce effect
+      setTimeout(() => vegetable.remove(), 300); // Remove after
+      updateScoreBoard();
+    }
+  });
 }
 
-// Detect scratching and prevent page scrolling
-canvas.addEventListener("mousedown", (event) => {
-  isScratching = true;
-  event.preventDefault(); // Prevent default behavior to stop page scrolling
-});
-canvas.addEventListener("mouseup", (event) => {
-  isScratching = false;
-  event.preventDefault(); // Prevent default behavior to stop page scrolling
-});
-canvas.addEventListener("mousemove", (event) => {
-  if (isScratching) {
-    event.preventDefault(); // Prevent default behavior to stop page scrolling
-    const vegetables = document.querySelectorAll(".vegetable");
-
-    // Only add points if the mouse has moved (horizontal or vertical movement)
-    if (event.clientX !== lastMouseX || event.clientY !== lastMouseY) {
-      vegetables.forEach((vegetable) => {
-        const rect = vegetable.getBoundingClientRect();
-
-        // Check if the mouse is over the vegetable horizontally and vertically
-        if (
-          event.clientX >= rect.left &&
-          event.clientX <= rect.right &&
-          event.clientY >= rect.top &&
-          event.clientY <= rect.bottom &&
-          !vegetable.classList.contains("scratched")
-        ) {
-          vegetable.classList.add("scratched");
-          score += 10; // Add points for scratching
-          vegetable.style.animation = "bounce 0.3s"; // Add bounce effect
-          setTimeout(() => vegetable.remove(), 300); // Remove after bounce
-          updateScoreBoard();
-        }
-      });
+// Detect clicks outside vegetables
+canvas.addEventListener("click", (event) => {
+  if (lives > 0) {
+    if (!event.target.classList.contains("vegetable")) {
+      lives -= 1; // Lose a life for clicking outside vegetables
+      updateScoreBoard();
+      if (lives <= 0) {
+        checkGameOver();
+      }
     }
-
-    // Update lastMouseX and lastMouseY to the current mouse position
-    lastMouseX = event.clientX;
-    lastMouseY = event.clientY;
   }
 });
 
@@ -95,8 +80,10 @@ function updateScoreBoard() {
 }
 
 function checkGameOver() {
+  // Stop creating new vegetables
   clearInterval(gameInterval);
-  clearInterval(timerInterval);
+
+  // Allow vegetables to finish animations but stop deducting lives
   setTimeout(() => {
     alert("Game Over! Your score: " + score);
     resetGame();
@@ -108,22 +95,30 @@ function resetGame() {
   lives = 3;
   timer = 60;
 
+  // Clear all vegetables
   const vegetables = document.querySelectorAll(".vegetable");
   vegetables.forEach((vegetable) => vegetable.remove());
 
+  // Clear all intervals
   clearInterval(gameInterval);
   clearInterval(timerInterval);
 
+  // Update the scoreboard
   updateScoreBoard();
+
+  // Restart the game
   startGame();
 }
 
 function startGame() {
+  // Ensure intervals are cleared before starting new ones
   clearInterval(gameInterval);
   clearInterval(timerInterval);
 
+  // Generate vegetables every second
   gameInterval = setInterval(createVegetable, 1000);
 
+  // Start the timer countdown
   timerInterval = setInterval(() => {
     timer--;
     updateScoreBoard();
@@ -133,7 +128,7 @@ function startGame() {
     }
   }, 1000);
 
-  updateScoreBoard();
+  updateScoreBoard(); // Ensure the scoreboard is updated at the start
 }
 
 startGame();
