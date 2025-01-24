@@ -24,7 +24,7 @@ function createVegetable() {
   canvas.appendChild(vegetable);
 
   // Animate falling
-  let speed = Math.random() * 1 + 0.5; // Random speed
+  let speed = Math.random() * 1 + 1; // Random speed
   function fall() {
     let top = parseFloat(vegetable.style.top);
     if (top > window.innerHeight) {
