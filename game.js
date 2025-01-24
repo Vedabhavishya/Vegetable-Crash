@@ -43,15 +43,18 @@ function createVegetable() {
   fall();
 }
 
-// Detect scratching
-canvas.addEventListener("mousedown", () => {
+// Detect scratching and prevent page scrolling
+canvas.addEventListener("mousedown", (event) => {
   isScratching = true;
+  event.preventDefault(); // Prevent default behavior to stop page scrolling
 });
-canvas.addEventListener("mouseup", () => {
+canvas.addEventListener("mouseup", (event) => {
   isScratching = false;
+  event.preventDefault(); // Prevent default behavior to stop page scrolling
 });
 canvas.addEventListener("mousemove", (event) => {
   if (isScratching) {
+    event.preventDefault(); // Prevent default behavior to stop page scrolling
     const vegetables = document.querySelectorAll(".vegetable");
 
     // Only add points if the mouse has moved (horizontal or vertical movement)
