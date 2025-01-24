@@ -8,7 +8,7 @@ let timerInterval;
 let timer = 60; // 1 minute in seconds
 
 // Vegetable images
-const vegetables = ["🍎", "🧅", "🍈", "🍐", "🍅", "🥦", "🌽", "🍆", "🍋", "🍉", "🍓", "🫐", "🍊", "🍑", "🥥", "🍏"];
+const vegetables = ["🍎", "🧅", "🍈", "🍐", "🍅", "🥦", "🌽", "🍋", "🍉", "🍓", "🫐", "🍊", "🍑", "🥥", "🍏"];
 
 function createVegetable() {
   if (lives <= 0) return; // Stop creating vegetables if the game is over
@@ -28,15 +28,15 @@ function createVegetable() {
   function fall() {
     let top = parseFloat(vegetable.style.top);
     if (top > window.innerHeight) {
+      // Check if the vegetable wasn't clicked
       if (!vegetable.classList.contains("clicked") && lives > 0) {
-        // Only deduct life if the game is not over
-        lives -= 1;
+        lives -= 1; // Deduct a life
         updateScoreBoard();
         if (lives <= 0) {
           checkGameOver();
         }
       }
-      vegetable.remove(); // Remove vegetable after it falls out
+      vegetable.remove(); // Remove the vegetable after it falls out
     } else if (vegetable.parentElement) {
       vegetable.style.top = top + speed + "px";
       requestAnimationFrame(fall);
